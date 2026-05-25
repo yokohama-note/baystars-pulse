@@ -1,41 +1,3 @@
-const games = [
-  {
-    date: "5/24 Sun",
-    result: "DeNA 1 - 0 ヤクルト",
-    status: "WIN",
-    note: "石田裕太郎が6回無失点。戸柱の犠飛による1点をブルペンで守り切った試合。",
-    tags: ["完封リレー", "横浜", "接戦勝ち"]
-  },
-  {
-    date: "5/23 Sat",
-    result: "DeNA 0 - 6 ヤクルト",
-    status: "LOSS",
-    note: "打線が沈黙。翌日の反発ポイントとして見たい敗戦。",
-    tags: ["完封負け", "打線", "切り替え"]
-  },
-  {
-    date: "5/21 Thu",
-    result: "広島 3 - 1 DeNA",
-    status: "LOSS",
-    note: "マツダで終盤まで追う展開。打線のつながりが次の論点に。",
-    tags: ["ビジター", "打線"]
-  },
-  {
-    date: "5/20 Wed",
-    result: "広島 3 - 4 DeNA",
-    status: "WIN",
-    note: "接戦を拾った勝利。中継ぎ運用と終盤の粘りを見たい試合。",
-    tags: ["1点差", "終盤", "マツダ"]
-  },
-  {
-    date: "5/19 Tue",
-    result: "広島 3 - 1 DeNA",
-    status: "LOSS",
-    note: "カード初戦を落とした試合。先発・竹田の登板内容が確認ポイント。",
-    tags: ["ビジター", "カード初戦"]
-  }
-];
-
 const buzzItems = [
   {
     title: "石田裕太郎の好投",
@@ -80,11 +42,49 @@ const quickLinks = [
   ["Google News", "記事ベースで確認", "https://news.google.com/search?q=%E6%A8%AA%E6%B5%9CDeNA%E3%83%99%E3%82%A4%E3%82%B9%E3%82%BF%E3%83%BC%E3%82%BA"]
 ];
 
+const statusStrip = document.querySelector("#statusStrip");
+const latestGameLabel = document.querySelector("#latestGameLabel");
+const latestGameScore = document.querySelector("#latestGameScore");
+const latestGameSummary = document.querySelector("#latestGameSummary");
+const latestGameStatus = document.querySelector("#latestGameStatus");
+const metricGrid = document.querySelector("#metricGrid");
+const broadcastList = document.querySelector("#broadcastList");
+const watchPoints = document.querySelector("#watchPoints");
+const updateNote = document.querySelector("#updateNote");
 const gameList = document.querySelector("#gameList");
 const buzzList = document.querySelector("#buzzList");
 const quickLinkList = document.querySelector("#quickLinks");
 
-function renderGames() {
+async function loadJson(path) {
+  const response = await fetch(path);
+  if (!response.ok) {
+    throw new Error(`${path} を読み込めませんでした`);
+  }
+  return response.json();
+}
+
+function renderSummary(summary) {
+  statusStrip.innerHTML = summary.hero.status.map((item) => `<span>${item}</span>`).join("");
+
+  latestGameLabel.textContent = summary.latestGame.label;
+  latestGameScore.textContent = summary.latestGame.score;
+  latestGameSummary.textContent = summary.latestGame.summary;
+  latestGameStatus.textContent = summary.latestGame.status;
+  latestGameStatus.className = `badge ${summary.latestGame.status === "WIN" ? "win" : "loss"}`;
+
+  metricGrid.innerHTML = summary.metrics.map((metric) => `
+    <article>
+      <span class="metric">${metric.label}</span>
+      <strong>${metric.value}</strong>
+      <p>${metric.description}</p>
+    </article>
+  `).join("");
+
+  watchPoints.innerHTML = summary.watchPoints.map((point) => `<li>${point}</li>`).join("");
+  updateNote.textContent = summary.updateNote;
+}
+
+function renderGames(games) {
   gameList.innerHTML = games.map((game) => `
     <article class="game-card">
       <div class="game-card__top">
@@ -98,6 +98,26 @@ function renderGames() {
       <div class="chip-row">
         ${game.tags.map((tag) => `<span class="chip">${tag}</span>`).join("")}
       </div>
+    </article>
+  `).join("");
+}
+
+function renderBroadcasts(broadcasts) {
+  if (!broadcasts.length) {
+    broadcastList.innerHTML = `
+      <article class="broadcast-card">
+        <p>放送予定はまだ登録されていません。</p>
+      </article>
+    `;
+    return;
+  }
+
+  broadcastList.innerHTML = broadcasts.map((broadcast) => `
+    <article class="broadcast-card">
+      <p class="section-kicker">TV</p>
+      <h3>${broadcast.game}</h3>
+      <strong>${broadcast.channel}</strong>
+      <span>${broadcast.channelNumber}</span>
     </article>
   `).join("");
 }
@@ -135,7 +155,36 @@ function setupTabs() {
   });
 }
 
-renderGames();
-renderBuzz();
-renderLinks();
-setupTabs();
+async function init() {
+  setupTabs();
+  renderBuzz();
+  renderLinks();
+
+  try {
+    const [summary, games, broadcasts] = await Promise.all([
+      loadJson("data/summary.json"),
+      loadJson("data/games.json"),
+      loadJson("data/broadcasts.json")
+    ]);
+
+    renderSummary(summary);
+    renderGames(games);
+    renderBroadcasts(broadcasts);
+  } catch (error) {
+    gameList.innerHTML = `
+      <article class="game-card">
+        <h3>データを読み込めませんでした</h3>
+        <p>ローカルで確認する場合は、ファイルを直接開かずローカルサーバー経由で表示してください。</p>
+      </article>
+    `;
+    broadcastList.innerHTML = `
+      <article class="broadcast-card">
+        <p>放送予定を読み込めませんでした。</p>
+      </article>
+    `;
+    updateNote.textContent = "データの読み込みに失敗しました。";
+    console.error(error);
+  }
+}
+
+init();

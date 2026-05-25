@@ -148,6 +148,15 @@ a {
   line-height: 1.7;
 }
 
+.fan-note {
+  max-width: 390px;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 .status-strip {
   display: flex;
   flex-wrap: wrap;
@@ -205,6 +214,8 @@ a {
 .score-card,
 .metric-grid article,
 .panel,
+.broadcast-panel,
+.broadcast-card,
 .game-card,
 .buzz-card,
 .quick-link,
@@ -289,8 +300,49 @@ p {
 }
 
 .panel,
+.broadcast-panel,
 .note {
   padding: 16px;
+}
+
+.broadcast-panel {
+  margin-top: 12px;
+  background: #f7fbff;
+}
+
+.broadcast-list {
+  display: grid;
+  gap: 10px;
+}
+
+.broadcast-card {
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  background: #fff;
+}
+
+.broadcast-card h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.broadcast-card strong {
+  color: var(--bay-deep);
+  font-size: 18px;
+}
+
+.broadcast-card span {
+  color: var(--bay-blue);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.broadcast-card p:not(.section-kicker) {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .panel-head {
@@ -390,6 +442,18 @@ p {
   margin-top: 14px;
   background: #fff9e8;
   border-color: #ead389;
+}
+
+.site-footer {
+  padding: 18px;
+  border-top: 1px solid var(--line);
+  background: #f7fbff;
+}
+
+.site-footer p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 @media (max-width: 430px) {

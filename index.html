@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#005bac">
-  <title>BayStars Pulse</title>
+  <title>BAYSTARS Pulse</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,13 +20,12 @@
         </div>
       </div>
       <div class="hero__content">
-        <p class="eyebrow">YOKOHAMA DeNA BAYSTARS</p>
-        <h1>BayStars Pulse</h1>
+        <p class="eyebrow">YOKOHAMA DeNA BAYSTARS FAN SITE</p>
+        <h1>BAYSTARS Pulse</h1>
         <p class="lead">試合結果、次戦、SNSで追うべき話題をまとめて確認。</p>
-        <div class="status-strip" aria-label="チーム概況">
-          <span>4位</span>
-          <span>21勝23敗2分</span>
-          <span>5/24更新</span>
+        <p class="fan-note">横浜DeNAベイスターズを応援する個人運営の非公式ファンサイトです。</p>
+        <div class="status-strip" id="statusStrip" aria-label="チーム概況">
+          <span>読み込み中</span>
         </div>
       </div>
     </header>
@@ -41,34 +40,33 @@
     <section class="view active" id="overview" aria-label="概況">
       <article class="score-card main-card">
         <div>
-          <p class="section-kicker">最新試合</p>
-          <h2>DeNA 1 - 0 ヤクルト</h2>
-          <p>2026年5月24日、横浜。石田裕太郎が6回無失点、2回裏の1点を守り切る完封リレー。</p>
+          <p class="section-kicker" id="latestGameLabel">最新試合</p>
+          <h2 id="latestGameScore">読み込み中</h2>
+          <p id="latestGameSummary">公開データを読み込んでいます。</p>
         </div>
-        <span class="badge win">WIN</span>
+        <span class="badge win" id="latestGameStatus">--</span>
       </article>
 
-      <div class="metric-grid">
-        <article>
-          <span class="metric">直近5戦</span>
-          <strong>2勝3敗</strong>
-          <p>巨人・広島・ヤクルト戦でロースコアが続く流れ。</p>
-        </article>
-        <article>
-          <span class="metric">次カード</span>
-          <strong>オリックス</strong>
-          <p>5/26から横浜で交流戦、開始は17:45。</p>
-        </article>
+      <section class="broadcast-panel" aria-label="放送予定">
+        <div class="panel-head">
+          <h2>次の放送予定</h2>
+        </div>
+        <div class="broadcast-list" id="broadcastList">
+          <article class="broadcast-card">
+            <p>公開データを読み込んでいます。</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="metric-grid" id="metricGrid">
       </div>
 
       <section class="panel">
         <div class="panel-head">
           <h2>今日の見どころ</h2>
         </div>
-        <ul class="talk-list">
-          <li>前日0-6の重い空気から、翌日1-0で踏みとどまった反発力。</li>
-          <li>5月は完封負けも目立つため、投手陣の粘りと打線の接点が焦点。</li>
-          <li>5/23・24開催のポケモンベースボールフェスタ関連の写真・グッズ投稿も追いどころ。</li>
+        <ul class="talk-list" id="watchPoints">
+          <li>公開データを読み込んでいます。</li>
         </ul>
       </section>
     </section>
@@ -95,9 +93,12 @@
       <div class="quick-grid" id="quickLinks"></div>
       <section class="note">
         <h2>更新メモ</h2>
-        <p>この版は2026年5月24日夜時点の公開情報で作成。Xのリアルタイム投稿は外部検索リンクで開く設計です。</p>
+        <p id="updateNote">公開データを読み込んでいます。</p>
       </section>
     </section>
+    <footer class="site-footer">
+      <p>このサイトは横浜DeNAベイスターズを応援する個人運営の非公式ファンサイトです。球団、NPB、関連企業とは関係ありません。掲載内容は公開情報をもとに作成しており、正確な公式情報は球団公式サイト・NPB公式記録をご確認ください。</p>
+    </footer>
   </main>
   <script src="app.js"></script>
 </body>
