@@ -214,21 +214,21 @@ async function init() {
   renderBuzz();
   renderLinks();
 
-  loadJson("data/summary.json")
+  loadJson("./data/summary.json")
     .then(renderSummary)
     .catch((error) => {
       renderSummaryError(error);
       console.error(error);
     });
 
-  loadJson("data/games.json")
+  loadJson("./data/games.json")
     .then(renderGames)
     .catch((error) => {
       renderGamesError(error);
       console.error(error);
     });
 
-  loadJson("data/broadcasts.json")
+  loadJson("./data/broadcasts.json")
     .then(renderBroadcasts)
     .catch((error) => {
       renderBroadcastsError(error);
