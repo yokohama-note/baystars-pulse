@@ -1,7 +1,17 @@
 [
   {
-    "game": "DeNA vs オリックス",
+    "game": "DeNA vs オリックス (5/27)",
     "channel": "TBSチャンネル2",
     "channelNumber": "CS297 / Ch.617"
+  },
+  {
+    "game": "DeNA vs オリックス (5/27)",
+    "channel": "NHK BS",
+    "channelNumber": "BS101"
+  },
+  {
+    "game": "DeNA vs オリックス (5/27)",
+    "channel": "テレビ神奈川",
+    "channelNumber": "tvk 031 / 延長時032"
   }
 ]
