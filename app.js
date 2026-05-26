@@ -56,14 +56,25 @@ const buzzList = document.querySelector("#buzzList");
 const quickLinkList = document.querySelector("#quickLinks");
 
 async function loadJson(path) {
-  const response = await fetch(path);
+  const response = await fetch(path, { cache: "no-store" });
   if (!response.ok) {
-    throw new Error(`${path} を読み込めませんでした`);
+    throw new Error(`${path} を読み込めませんでした (${response.status})`);
   }
   return response.json();
 }
 
+function requireFields(data, fields, label) {
+  const missing = fields.filter((field) => data[field] === undefined || data[field] === null);
+  if (missing.length) {
+    throw new Error(`${label} の項目が不足しています: ${missing.join(", ")}`);
+  }
+}
+
 function renderSummary(summary) {
+  requireFields(summary, ["hero", "latestGame", "metrics", "watchPoints", "updateNote"], "summary.json");
+  requireFields(summary.hero, ["status"], "summary.json hero");
+  requireFields(summary.latestGame, ["label", "score", "status", "summary"], "summary.json latestGame");
+
   statusStrip.innerHTML = summary.hero.status.map((item) => `<span>${item}</span>`).join("");
 
   latestGameLabel.textContent = summary.latestGame.label;
@@ -85,6 +96,10 @@ function renderSummary(summary) {
 }
 
 function renderGames(games) {
+  if (!Array.isArray(games)) {
+    throw new Error("games.json は配列である必要があります");
+  }
+
   gameList.innerHTML = games.map((game) => `
     <article class="game-card">
       <div class="game-card__top">
@@ -103,6 +118,10 @@ function renderGames(games) {
 }
 
 function renderBroadcasts(broadcasts) {
+  if (!Array.isArray(broadcasts)) {
+    throw new Error("broadcasts.json は配列である必要があります");
+  }
+
   if (!broadcasts.length) {
     broadcastList.innerHTML = `
       <article class="broadcast-card">
@@ -155,36 +174,66 @@ function setupTabs() {
   });
 }
 
+function renderSummaryError(error) {
+  statusStrip.innerHTML = "<span>データ読込エラー</span>";
+  latestGameScore.textContent = "概況データを読み込めませんでした";
+  latestGameSummary.textContent = error.message;
+  latestGameStatus.textContent = "--";
+  latestGameStatus.className = "badge loss";
+  metricGrid.innerHTML = `
+    <article>
+      <span class="metric">確認</span>
+      <strong>JSON</strong>
+      <p>data/summary.json の場所と内容を確認してください。</p>
+    </article>
+  `;
+  watchPoints.innerHTML = `<li>${error.message}</li>`;
+  updateNote.textContent = "data/summary.json の読み込みに失敗しました。";
+}
+
+function renderGamesError(error) {
+  gameList.innerHTML = `
+    <article class="game-card">
+      <h3>試合結果を読み込めませんでした</h3>
+      <p>${error.message}</p>
+    </article>
+  `;
+}
+
+function renderBroadcastsError(error) {
+  broadcastList.innerHTML = `
+    <article class="broadcast-card">
+      <p>放送予定を読み込めませんでした。data/broadcasts.json を確認してください。</p>
+      <p>${error.message}</p>
+    </article>
+  `;
+}
+
 async function init() {
   setupTabs();
   renderBuzz();
   renderLinks();
 
-  try {
-    const [summary, games, broadcasts] = await Promise.all([
-      loadJson("data/summary.json"),
-      loadJson("data/games.json"),
-      loadJson("data/broadcasts.json")
-    ]);
+  loadJson("data/summary.json")
+    .then(renderSummary)
+    .catch((error) => {
+      renderSummaryError(error);
+      console.error(error);
+    });
 
-    renderSummary(summary);
-    renderGames(games);
-    renderBroadcasts(broadcasts);
-  } catch (error) {
-    gameList.innerHTML = `
-      <article class="game-card">
-        <h3>データを読み込めませんでした</h3>
-        <p>ローカルで確認する場合は、ファイルを直接開かずローカルサーバー経由で表示してください。</p>
-      </article>
-    `;
-    broadcastList.innerHTML = `
-      <article class="broadcast-card">
-        <p>放送予定を読み込めませんでした。</p>
-      </article>
-    `;
-    updateNote.textContent = "データの読み込みに失敗しました。";
-    console.error(error);
-  }
+  loadJson("data/games.json")
+    .then(renderGames)
+    .catch((error) => {
+      renderGamesError(error);
+      console.error(error);
+    });
+
+  loadJson("data/broadcasts.json")
+    .then(renderBroadcasts)
+    .catch((error) => {
+      renderBroadcastsError(error);
+      console.error(error);
+    });
 }
 
 init();
